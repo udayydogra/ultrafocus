@@ -2,10 +2,13 @@ import http.server
 import socketserver
 import ssl
 import threading
+import os
 
 PORT_HTTP = 80
 PORT_HTTPS = 443
-DIRECTORY = "/home/uggi/Projects/ultrafocus"
+
+# Dynamically get the directory where server.py is located
+DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):

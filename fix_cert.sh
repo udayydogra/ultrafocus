@@ -1,14 +1,33 @@
 #!/bin/bash
 # Run as root
 
-echo "Fixing SSL Certificate for Chrome..."
+echo "Fixing SSL Certificate for browsers..."
 
 # Get the actual user's home directory
 USER_HOME=$(eval echo "~${SUDO_USER:-$USER}")
 
-# Install certutil to manage Chrome's certificate database
-# Install nss for certutil
-pacman -Sy --noconfirm nss
+# Auto-detect OS package manager to install NSS tools
+if command -v apt-get &> /dev/null; then
+    echo "Detected Debian/Ubuntu-based system."
+    apt-get update -qq
+    apt-get install -y libnss3-tools
+    SYS_TRUST_DIR="/usr/local/share/ca-certificates"
+    SYS_UPDATE_CMD="update-ca-certificates"
+elif command -v pacman &> /dev/null; then
+    echo "Detected Arch-based system."
+    pacman -Sy --noconfirm nss
+    SYS_TRUST_DIR="/etc/ca-certificates/trust-source/anchors"
+    SYS_UPDATE_CMD="trust extract-compat"
+elif command -v dnf &> /dev/null; then
+    echo "Detected Fedora/RHEL-based system."
+    dnf install -y nss-tools
+    SYS_TRUST_DIR="/etc/pki/ca-trust/source/anchors"
+    SYS_UPDATE_CMD="update-ca-trust"
+else
+    echo "Warning: Unsupported package manager. You may need to install 'certutil' manually."
+    SYS_TRUST_DIR="/usr/local/share/ca-certificates"
+    SYS_UPDATE_CMD="update-ca-certificates"
+fi
 
 # 1. Create a config file for OpenSSL with ALL domains
 cat << 'EOF' > /tmp/san.cnf
@@ -100,13 +119,13 @@ EOF
 # 2. Generate the cert using the config
 openssl req -new -x509 -nodes -days 365 -keyout /etc/ssl/private/focus_server.key -out /etc/ssl/certs/focus_server.crt -config /tmp/san.cnf 2>/dev/null
 
-# 3. Add to system trust store (Arch Linux)
-cp /etc/ssl/certs/focus_server.crt /etc/ca-certificates/trust-source/anchors/focus_server.crt
-trust extract-compat > /dev/null 2>&1
+# 3. Add to system trust store
+mkdir -p "$SYS_TRUST_DIR"
+cp /etc/ssl/certs/focus_server.crt "$SYS_TRUST_DIR/focus_server.crt"
+$SYS_UPDATE_CMD > /dev/null 2>&1
 
 # 4. Add to Chrome/Edge NSS DB
 if [ -d "$USER_HOME/.pki/nssdb" ]; then
-    # Delete old cert if exists, then add new one
     certutil -d sql:$USER_HOME/.pki/nssdb -D -n "FocusLocalhost" 2>/dev/null || true
     certutil -d sql:$USER_HOME/.pki/nssdb -A -t "C,," -n "FocusLocalhost" -i /etc/ssl/certs/focus_server.crt
 else
@@ -116,9 +135,9 @@ else
 fi
 
 # Ensure correct permissions
-chown -R $SUDO_USER:$SUDO_USER "$USER_HOME/.pki"
+chown -R $SUDO_USER:$SUDO_USER "$USER_HOME/.pki" 2>/dev/null || true
 
 # 5. Restart the server
-systemctl restart focus-server
+systemctl restart focus-server 2>/dev/null || true
 
-echo "Success! The certificate error is fixed. Refresh the page in Chrome!"
+echo "Success! The certificate error is fixed. Refresh the page in your browser."
