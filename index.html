@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus.</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #111111, #0a0a0a);
+            box-shadow:  20px 20px 60px #020202, 
+                         -20px -20px 60px #080808;
+            border: 1px solid #1a1a1a;
+            max-width: 800px;
+            width: 90%;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .message {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            font-weight: 900;
+            font-size: 4rem;
+            background: -webkit-linear-gradient(45deg, #ff3366, #ff9933);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            margin: 0 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .subtext {
+            font-size: 1.2rem;
+            color: #555;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="message">
+            Bhaii humara kuch goal hai<br>humme wo achieve karna hai<br>sirf <span class="highlight" id="days-count">--</span> din bache hai.
+        </div>
+        <div class="subtext">Target: 15 August</div>
+    </div>
+
+    <script>
+        function updateDaysRemaining() {
+            const today = new Date();
+            // Target date: August 15th
+            let targetDate = new Date(today.getFullYear(), 7, 15); // Month is 0-indexed (7 = August)
+            
+            // If we are past August 15th this year, point to next year
+            if (today.getTime() > targetDate.getTime()) {
+                targetDate.setFullYear(targetDate.getFullYear() + 1);
+            }
+
+            // Calculate difference in milliseconds
+            const diffTime = targetDate - today;
+            // Convert to days (ceil to ensure partial days count as 1)
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+            document.getElementById('days-count').innerText = diffDays;
+        }
+
+        // Initialize immediately
+        updateDaysRemaining();
+        
+        // Update every hour automatically
+        setInterval(updateDaysRemaining, 1000 * 60 * 60);
+    </script>
+</body>
+</html>
