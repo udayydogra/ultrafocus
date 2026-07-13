@@ -1,86 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Focus.</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: #050505;
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+    <title>SYSTEM LOCKDOWN</title>
+    
+    <!-- Google Fonts imported from appsec-ui-design globals.css -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Roboto', 'sans-serif'],
+              condensed: ['Roboto Condensed', 'sans-serif'],
+            },
+            colors: {
+              primary: '#1d4ed8', // blue-700 approx
+              slate: {
+                950: '#020617',
+              }
+            }
+          }
         }
-
-        .container {
-            text-align: center;
-            padding: 50px;
-            border-radius: 24px;
-            background: linear-gradient(145deg, #111111, #0a0a0a);
-            box-shadow:  20px 20px 60px #020202, 
-                         -20px -20px 60px #080808;
-            border: 1px solid #1a1a1a;
-            max-width: 800px;
-            width: 90%;
-            animation: fadeIn 1.5s ease-out;
-        }
-
-        .message {
-            font-size: 2.8rem;
-            font-weight: 700;
-            line-height: 1.5;
-            color: #e0e0e0;
-            margin-bottom: 20px;
-        }
-
-        .highlight {
-            font-weight: 900;
-            font-size: 4rem;
-            background: -webkit-linear-gradient(45deg, #ff3366, #ff9933);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-            margin: 0 15px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-            100% { transform: scale(1); }
-        }
-
-        .subtext {
-            font-size: 1.2rem;
-            color: #555;
-            margin-top: 30px;
-            text-transform: uppercase;
-            letter-spacing: 6px;
-            font-weight: 700;
+      }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .scanline {
+                width: 100%;
+                height: 2px;
+                background: rgba(0, 255, 65, 0.1);
+                opacity: 0.75;
+                position: absolute;
+                top: 0;
+                left: 0;
+                animation: scanline 6s linear infinite;
+                pointer-events: none;
+                z-index: 20;
+            }
+            
+            @keyframes scanline {
+                0% { top: 0; }
+                100% { top: 100%; }
+            }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="message">
-            Bhaii humara kuch goal hai<br>humme wo achieve karna hai<br>sirf <span class="highlight" id="days-count">--</span> din bache hai.
-        </div>
-        <div class="subtext">Target: 15 August</div>
-    </div>
+<body class="bg-slate-950 font-sans antialiased m-0 p-0 overflow-hidden text-white">
 
+    <!-- Command Center Hero Section layout pulled from appsec-ui-design -->
+    <section class="relative h-screen w-full flex flex-col justify-center items-center overflow-hidden border-8 border-slate-950 ring-1 ring-white/10">
+        
+        <!-- Background Image overlay from page.tsx -->
+        <div class="absolute inset-0 bg-slate-950">
+            <img 
+                src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070" 
+                alt="Security Operations" 
+                class="w-full h-full object-cover opacity-20 scale-105"
+            />
+        </div>
+        
+        <!-- CRT Monitor / Scanline Effect (from globals.css / page.tsx) -->
+        <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_4px,3px_100%]"></div>
+        <div class="scanline"></div>
+        
+        <!-- Gradients -->
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent z-10"></div>
+        
+        <!-- Main Content -->
+        <div class="relative z-20 flex flex-col items-center text-center p-8 lg:p-24 space-y-12">
+            
+            <!-- Status Badge (appsec-ui style) -->
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.2)]">
+                    <div class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                    <span class="text-rose-400 text-[10px] font-black tracking-[0.3em] uppercase">System Locked / Distraction Blocked</span>
+                </div>
+                <div class="hidden md:block h-px w-24 bg-white/10"></div>
+                <span class="text-white/40 text-[10px] font-black tracking-[0.4em] uppercase">Target: 15 August</span>
+            </div>
+            
+            <!-- Typography block -->
+            <div class="max-w-5xl space-y-16">
+                <h1 class="text-5xl md:text-7xl font-black text-white leading-[1.1] font-condensed tracking-tighter uppercase">
+                    Bhaii Humara Kuch <br class="md:hidden" />
+                    <span class="text-primary bg-white px-8 py-2 inline-block -rotate-1 skew-x-1 shadow-[12px_12px_0_0_rgba(30,64,175,0.3)] mt-2">Goal Hai</span>
+                    <br/>
+                    <span class="text-3xl md:text-5xl opacity-90 mt-6 inline-block tracking-widest text-slate-300">Humme Wo Achieve Karna Hai</span>
+                </h1>
+                
+                <div class="text-2xl md:text-4xl text-slate-400 font-medium leading-relaxed uppercase tracking-widest mt-12 flex flex-col md:flex-row items-center justify-center gap-6">
+                    <span>Sirf</span>
+                    <span id="days-count" class="text-rose-500 font-black text-6xl md:text-8xl bg-rose-950/50 border border-rose-500/30 px-8 py-4 rounded-3xl shadow-[0_0_30px_rgba(244,63,94,0.3)] animate-pulse">--</span>
+                    <span>Din Bache Hai</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Original Countdown Script -->
     <script>
         function updateDaysRemaining() {
             const today = new Date();
