@@ -97,6 +97,14 @@ iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to-destination 1.1.1.3:53
 iptables -t nat -D OUTPUT -p tcp --dport 53 -j DNAT --to-destination 1.1.1.3:53 2>/dev/null
 iptables -t nat -A OUTPUT -p tcp --dport 53 -j DNAT --to-destination 1.1.1.3:53
 
+echo "Intercepting Cloudflare blocked IP (0.0.0.0) and redirecting to local motivational server..."
+iptables -t nat -D OUTPUT -d 0.0.0.0/8 -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:80 2>/dev/null
+iptables -t nat -A OUTPUT -d 0.0.0.0/8 -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:80
+
+iptables -t nat -D OUTPUT -d 0.0.0.0/8 -p tcp --dport 443 -j DNAT --to-destination 127.0.0.1:443 2>/dev/null
+iptables -t nat -A OUTPUT -d 0.0.0.0/8 -p tcp --dport 443 -j DNAT --to-destination 127.0.0.1:443
+
+
 # 3. iptables String Matching for requested specific strings (SNI / HTTP blocking)
 echo "Adding iptables string-matching rules for aggressive blocking..."
 STRINGS_TO_BLOCK=(
