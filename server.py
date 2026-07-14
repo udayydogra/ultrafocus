@@ -20,16 +20,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 def run_http():
     try:
-        socketserver.TCPServer.allow_reuse_address = True
-        with socketserver.TCPServer(("", PORT_HTTP), Handler) as httpd:
+        socketserver.ThreadingTCPServer.allow_reuse_address = True
+        with socketserver.ThreadingTCPServer(("", PORT_HTTP), Handler) as httpd:
             httpd.serve_forever()
     except Exception as e:
         print(f"HTTP error: {e}")
 
 def run_https():
     try:
-        socketserver.TCPServer.allow_reuse_address = True
-        with socketserver.TCPServer(("", PORT_HTTPS), Handler) as httpd:
+        socketserver.ThreadingTCPServer.allow_reuse_address = True
+        with socketserver.ThreadingTCPServer(("", PORT_HTTPS), Handler) as httpd:
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             context.load_cert_chain(certfile="/etc/ssl/certs/focus_server.crt", keyfile="/etc/ssl/private/focus_server.key")
             httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
