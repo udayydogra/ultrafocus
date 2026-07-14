@@ -105,29 +105,7 @@ iptables -t nat -D OUTPUT -d 0.0.0.0/8 -p tcp --dport 443 -j DNAT --to-destinati
 iptables -t nat -A OUTPUT -d 0.0.0.0/8 -p tcp --dport 443 -j DNAT --to-destination 127.0.0.1:443
 
 
-# 3. iptables String Matching for requested specific strings (SNI / HTTP blocking)
-echo "Adding iptables string-matching rules for aggressive blocking..."
-STRINGS_TO_BLOCK=(
-    "reddit.com" "youtube.com" "instagram.com" "facebook.com"
-    "xhamster" "netflix.com" "primevideo.com" "hotstar.com"
-    "sonyliv.com" "jiotv.com" "zee5.com" "jiocinema.com"
-    "telegram" "t.me" "twitter.com" "x.com" "tiktok.com"
-    "pinterest.com" "bbc.com" "cnn.com" "quora.com" "medium.com"
-    "ycombinator.com" "amazon.com" "amazon.in" "flipkart.com"
-    "myntra.com" "discord.com" "twitch.tv" "steampowered.com"
-    "nytimes.com" "theguardian.com" "wsj.com" "ndtv.com"
-    "epicgames.com" "roblox.com" "ign.com" "spotify.com"
-    "soundcloud.com" "hulu.com" "disneyplus.com" "hbomax.com"
-    "crunchyroll.com" "ebay.com" "aliexpress.com" "etsy.com"
-    "meesho.com" "ajio.com" "tumblr.com" "snapchat.com" "4chan.org" "9gag.com"
-)
-
-for str in "${STRINGS_TO_BLOCK[@]}"; do
-    # Remove rule if it exists to avoid duplicates
-    iptables -D OUTPUT -p tcp -m string --string "$str" --algo bm -j REJECT 2>/dev/null
-    # Add the rule
-    iptables -A OUTPUT -p tcp -m string --string "$str" --algo bm -j REJECT
-done
+# (String matching removed due to extreme CPU bottlenecking on network packets)
 
 # Save iptables rules so they persist across reboots (Debian/Ubuntu specific)
 if command -v netfilter-persistent &> /dev/null; then
